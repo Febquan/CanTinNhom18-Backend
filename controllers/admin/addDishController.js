@@ -1,25 +1,38 @@
+const { validationResult } = require("express-validator");
 const Dish = require("../../Model/dish");
 
 exports.AddDish = async (req, res, next) => {
   try {
-    //
-    const name1 = "Cơm chiên";
+    //Validator
+    const errors = validationResult(req);
+    console.log("hello");
+    console.log(errors);
+    if (!errors.isEmpty()) {
+      const error = new Error(errors.errors[0].msg);
+      error.statusCode = 422;
+      throw error;
+    }
+    //Take out sent information
+    const name = req.body.name;
+    const price = req.body.price;
     //Find Name already exit
-    const exist = await Dish.exists({ name: name1 });
+    const exist = await Dish.exists({ name: name });
     if (exist) {
-      res.status(400).json({
-        message: "Món ăn này đã tồn tại !",
-      });
-      return;
+      const error = new Error("Món ăn này đã tồn tại !");
+      error.statusCode = 400;
+      throw error;
     }
     // Add dish
-    const a = new Dish({ name: name1, price: 20000 });
+    const a = new Dish({ name: name, price: price });
     const dbRes = await a.save();
 
     res.status(200).json({
       content: dbRes,
     });
   } catch (err) {
-    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
