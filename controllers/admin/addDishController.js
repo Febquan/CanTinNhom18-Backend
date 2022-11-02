@@ -5,8 +5,6 @@ exports.AddDish = async (req, res, next) => {
   try {
     //Validator
     const errors = validationResult(req);
-    console.log("hello");
-    console.log(errors);
     if (!errors.isEmpty()) {
       const error = new Error(errors.errors[0].msg);
       error.statusCode = 422;

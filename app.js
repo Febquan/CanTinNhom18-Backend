@@ -4,6 +4,7 @@ const app = express();
 const mongoose = require("mongoose");
 
 const addDishRoute = require("./routes/admin/addDishRoute");
+const placeOrder = require("./routes/user/placeOrder");
 
 //Database URL
 const MOGOODB_DATABASE_LINK =
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/admin", addDishRoute); //  /admin/addDish
+app.use("/user", placeOrder); //  /admin/addDish
 
 //Error Handling
 app.use((error, req, res, next) => {
