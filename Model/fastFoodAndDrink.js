@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const dishesSchema = new Schema({
+const FFADSchema = new Schema({
   name: {
     type: String,
     require: true,
@@ -15,11 +15,10 @@ const dishesSchema = new Schema({
     type: Number,
     require: true,
   },
-  isAvailable: {
-    type: Boolean,
-    require: true,
-    default: true,
+  amountAvailable: {
+    type: Number,
+    default: 0,
   },
 });
 
-module.exports = mongoose.model("Dish", dishesSchema);
+module.exports = mongoose.model("FastFoodAnhDrink", FFADSchema);

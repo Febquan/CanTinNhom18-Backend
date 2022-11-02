@@ -6,13 +6,16 @@ exports.placeOrder = async (req, res, next) => {
     const dishesIds = req.body.dishes;
     //Validation
     if (dishesIds.length === 0) {
-      throw new Error("Chưa có sản phẩm nào được nhập !");
+      const error = new Error("Chưa có sản phẩm nào được nhập !");
+      error.statusCode = 422;
+      throw error;
     }
     // place order
     let cost = 0;
     const order = new Orders({ dishes: dishesIds, cost: 0 });
-
     await order.populate("dishes.type");
+
+    //calculate cost
     cost = order.dishes.reduce(
       (sum, cur) => sum + cur.type.price * cur.quantity,
       0

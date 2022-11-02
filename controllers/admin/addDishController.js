@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
 const Dish = require("../../Model/dish");
 
-exports.AddDish = async (req, res, next) => {
+exports.addDish = async (req, res, next) => {
   try {
     //Validator
     const errors = validationResult(req);

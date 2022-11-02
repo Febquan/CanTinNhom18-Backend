@@ -4,6 +4,9 @@ const app = express();
 const mongoose = require("mongoose");
 
 const addDishRoute = require("./routes/admin/addDishRoute");
+const addFFAD = require("./routes/admin/addFastFoodAnDrink");
+const addMultipleFFAD = require("./routes/admin/addMultipleFastFoodAnDrink");
+
 const placeOrder = require("./routes/user/placeOrder");
 
 //Database URL
@@ -24,6 +27,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/admin", addDishRoute); //  /admin/addDish
+app.use("/admin", addFFAD);
+app.use("/admin", addMultipleFFAD);
 app.use("/user", placeOrder); //  /admin/addDish
 
 //Error Handling
