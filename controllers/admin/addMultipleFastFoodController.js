@@ -1,6 +1,6 @@
 const fastFoodAndDrink = require("../../Model/fastFoodAndDrink");
 
-exports.addFastMultipleFoodAndDrink = async (req, res, next) => {
+const addFastMultipleFoodAndDrink = async (req, res, next) => {
   try {
     //Validator
     const arrayOfFastFood = req.body.arrayOfFastFood;
@@ -61,3 +61,5 @@ exports.addFastMultipleFoodAndDrink = async (req, res, next) => {
     });
   }
 };
+
+module.exports = addFastMultipleFoodAndDrink;

@@ -21,4 +21,4 @@ const FFADSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("FastFoodAnhDrink", FFADSchema);
+module.exports = mongoose.model("FastFoodAndDrink", FFADSchema);

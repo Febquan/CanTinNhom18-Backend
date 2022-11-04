@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
 const Dish = require("../../Model/dish");
 
-exports.addDish = async (req, res, next) => {
+const addDish = async (req, res, next) => {
   try {
     //Validator
     const errors = validationResult(req);
@@ -10,9 +10,15 @@ exports.addDish = async (req, res, next) => {
       error.statusCode = 422;
       throw error;
     }
+    if (!req.file) {
+      const error = new Error("Không có hình của món ăn !");
+      error.statusCode = 422;
+      throw error;
+    }
     //Take out sent information
     const name = req.body.name;
     const price = req.body.price;
+    const imgUrl = req.file.path;
     //Find Name already exit
     const exist = await Dish.exists({ name: name });
     if (exist) {
@@ -21,7 +27,7 @@ exports.addDish = async (req, res, next) => {
       throw error;
     }
     // Add dish
-    const a = new Dish({ name: name, price: price });
+    const a = new Dish({ name: name, price: price, imgUrl: imgUrl });
     const dbRes = await a.save();
 
     res.status(200).json({
@@ -34,3 +40,5 @@ exports.addDish = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = addDish;

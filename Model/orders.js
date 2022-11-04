@@ -5,11 +5,12 @@ const orderSchema = new Schema({
   cost: {
     type: Number,
   },
-  dishes: [
+  order: [
     {
-      type: {
+      kind: String,
+      object: {
         type: Schema.Types.ObjectId,
-        ref: "Dish",
+        refPath: "order.kind",
       },
       quantity: Number,
       _id: false,

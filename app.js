@@ -3,11 +3,40 @@ const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
 
-const addDishRoute = require("./routes/admin/addDishRoute");
-const addFFAD = require("./routes/admin/addFastFoodAnDrink");
-const addMultipleFFAD = require("./routes/admin/addMultipleFastFoodAnDrink");
+const addFoodRoute = require("./routes/admin/addFoodRoute");
 
 const placeOrder = require("./routes/user/placeOrder");
+
+// Image upload
+const path = require("path");
+const multer = require("multer");
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      (new Date().toISOString() + "-" + file.originalname).replace(/:/g, "-")
+    );
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 //Database URL
 const MOGOODB_DATABASE_LINK =
@@ -26,9 +55,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/admin", addDishRoute); //  /admin/addDish
-app.use("/admin", addFFAD);
-app.use("/admin", addMultipleFFAD);
+app.use("/admin", addFoodRoute); //  /admin/addDish
 app.use("/user", placeOrder); //  /admin/addDish
 
 //Error Handling

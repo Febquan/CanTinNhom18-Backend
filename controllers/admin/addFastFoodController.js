@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
 const fastFoodAndDrink = require("../../Model/fastFoodAndDrink");
 
-exports.addFastFoodAndDrink = async (req, res, next) => {
+const addFastFoodAndDrink = async (req, res, next) => {
   try {
     //Validator
     const errors = validationResult(req);
@@ -54,3 +54,5 @@ exports.addFastFoodAndDrink = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = addFastFoodAndDrink;
