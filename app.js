@@ -1,10 +1,16 @@
+require("dotenv").config();
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
 
+//admin route
+const adminAuthRoute = require("./routes/admin/auth/adminAuthRoute");
 const addFoodRoute = require("./routes/admin/addFoodRoute");
+const isAdminRoute = require("./routes/admin/auth/is-admin");
 
+//user route
 const placeOrder = require("./routes/user/placeOrder");
 
 // Image upload
@@ -38,9 +44,6 @@ app.use(
 );
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-//Database URL
-const MOGOODB_DATABASE_LINK =
-  "mongodb+srv://febquan1:Aloalo123@cantinnmcnpm.xwgf2ug.mongodb.net/test";
 //Post
 app.use(bodyParser.json());
 
@@ -55,8 +58,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/admin", addFoodRoute); //  /admin/addDish
-app.use("/user", placeOrder); //  /admin/addDish
+app.use("/admin", adminAuthRoute);
+
+app.use("/admin", isAdminRoute, addFoodRoute);
+app.use("/user", placeOrder);
 
 //Error Handling
 app.use((error, req, res, next) => {
@@ -67,8 +72,8 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(MOGOODB_DATABASE_LINK)
+  .connect(process.env.MOGOODB_DATABASE_LINK)
   .then((result) => {
-    app.listen(8080);
+    app.listen(process.env.PORT);
   })
   .catch((err) => console.log(err));
