@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const orderSchema = new Schema({
+const completeOrdersSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -14,11 +14,11 @@ const orderSchema = new Schema({
     require: true,
   },
   status: {
-    type: String, //onsite , paid ,trusted
+    type: String, //onsite  ,trusted
     require: true,
   },
   statusCode: {
-    type: Number, //onsite , paid ,trusted
+    type: Number, //2,1
     require: true,
   },
   order: [
@@ -33,7 +33,6 @@ const orderSchema = new Schema({
     },
   ],
   created_at: { type: Date, require: true },
-  arrive_at: { type: Date, require: true },
 });
 
-module.exports = mongoose.model("Orders", orderSchema);
+module.exports = mongoose.model("CompleteOrders", completeOrdersSchema);

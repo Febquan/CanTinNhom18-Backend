@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
@@ -9,10 +8,12 @@ const mongoose = require("mongoose");
 const adminAuthRoute = require("./routes/admin/auth/adminAuthRoute");
 const addFoodRoute = require("./routes/admin/addFoodRoute");
 const isAdminRoute = require("./routes/admin/auth/is-admin");
+const manipulateOrdersRoute = require("./routes/admin/manipulateOrdersRoute");
 
 //user route
+const userAuthRoute = require("./routes/user/auth/userAuthRoute");
+const isUserRoute = require("./routes/user/auth/is-user");
 const placeOrder = require("./routes/user/placeOrder");
-
 // Image upload
 const path = require("path");
 const multer = require("multer");
@@ -59,9 +60,11 @@ app.use((req, res, next) => {
 });
 
 app.use("/admin", adminAuthRoute);
-
 app.use("/admin", isAdminRoute, addFoodRoute);
-app.use("/user", placeOrder);
+app.use("/admin", isAdminRoute, manipulateOrdersRoute);
+
+app.use("/user", userAuthRoute);
+app.use("/user", isUserRoute, placeOrder);
 
 //Error Handling
 app.use((error, req, res, next) => {
