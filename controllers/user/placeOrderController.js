@@ -1,9 +1,11 @@
 const Orders = require("../../Model/orders");
 const Users = require("../../Model/user");
-
+const FastFoodAndDrink = require("../../Model/fastFoodAndDrink");
+const roundTime = require("../../utils/roundTime");
+const mailer = require("../../utils/mailer");
 // const moment = require("moment-timezone");
 // const now = moment.tz(new Date(), "Asia/Ho_Chi_Minh").toString();
-exports.placeOrder = async (req, res, next) => {
+const placeOrder = async (req, res, next) => {
   try {
     //Take out sent information
     const order = req.body.order;
@@ -15,31 +17,52 @@ exports.placeOrder = async (req, res, next) => {
     }
     //is AllowPending
     let status = false;
-    let statusCode = 0;
+
     let email = "";
+
     if (req.userId) {
       status = "trusted";
-      statusCode = 1;
       user = await Users.findById(req.userId);
-      email = user.email;
+      //Time arrive
+      var arrive_at = req.body.arrive_at;
     } else {
       status = "onsite";
-      statusCode = 2;
+      if (!req.body.email) {
+        const error = new Error("Bạn chưa điền Email !");
+        error.statusCode = 422;
+        throw error;
+      }
+      email = req.body.email;
+    }
+
+    //Check FastFoodAndDrink available
+    for (food of order) {
+      if (food.kind === "FastFoodAndDrink") {
+        const temp = await FastFoodAndDrink.findById(food.object._id);
+        if (temp.amountAvailable < food.quantity) {
+          const error = new Error(
+            `Sản phẩm ${temp.name} này chỉ còn lại ${temp.amountAvailable} so với số lượng cần là ${food.quantity} !`
+          );
+          error.statusCode = 422;
+          throw error;
+        }
+        temp.amountAvailable = temp.amountAvailable - food.quantity;
+        await temp.save();
+      }
     }
     // place order
     let cost = 0;
-    //Time arrive
-    const arrive_at = req.body.arrive_at;
-
     const orderModel = new Orders({
       user: req.userId,
       order: order,
       cost: 0,
       status: status,
-      statusCode: statusCode,
-      email: email,
+      email: status == "onsite" ? email : null,
       created_at: new Date(),
-      arrive_at: statusCode == 2 ? new Date() : new Date(arrive_at),
+      arrive_at:
+        status == "onsite"
+          ? roundTime(undefined, 15)
+          : roundTime(arrive_at, 15),
     });
 
     await orderModel.populate("order.object");
@@ -51,6 +74,17 @@ exports.placeOrder = async (req, res, next) => {
     orderModel.cost = cost;
     const dbRes = await orderModel.save();
 
+    //sendMail to unAuth user
+    if (status === "onsite") {
+      mailer(
+        dbRes.email,
+        `Căn tin nhóm 18: Đơn hàng mã ${dbRes._id} `,
+        `<h2>Xin vui lòng click vào <a href="http://localhost:8080/user/watchMyOrderAuth/${dbRes.email}">đường link này</a> để theo dõi đơn hàng của bạn</h2>
+        
+        `
+      );
+    }
+
     res.status(200).json({
       content: dbRes,
     });
@@ -61,3 +95,5 @@ exports.placeOrder = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = placeOrder;

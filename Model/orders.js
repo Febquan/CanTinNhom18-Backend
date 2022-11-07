@@ -17,10 +17,6 @@ const orderSchema = new Schema({
     type: String, //onsite , paid ,trusted
     require: true,
   },
-  statusCode: {
-    type: Number, //onsite , paid ,trusted
-    require: true,
-  },
   order: [
     {
       kind: String,

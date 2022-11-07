@@ -5,7 +5,7 @@ const seeOrders = async (req, res, next) => {
     const orders = await OrdersModel.find()
       .sort({
         arrive_at: 1,
-        statusCode: 1,
+        created_at: 1,
       })
       .populate("order.object");
 

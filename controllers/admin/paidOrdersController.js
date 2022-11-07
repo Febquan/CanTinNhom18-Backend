@@ -1,12 +1,15 @@
 const completeOrdersModel = require("../../Model/completeOrders");
+const OrdersModel = require("../../Model/orders");
 const paidOrders = async (req, res, next) => {
   try {
     const orderId = req.params.orderId;
+    const orderPaid = await OrdersModel.findOneAndDelete({ _id: orderId });
+    const completeOrder = new completeOrdersModel({
+      ...orderPaid._doc,
+      status: "paid",
+    });
+    await completeOrder.save();
 
-    const orderPaid = await completeOrdersModel.findOneAndUpdate(
-      { _id: orderId },
-      { status: "paid" }
-    );
     res.status(200).json({
       orderPaid,
     });

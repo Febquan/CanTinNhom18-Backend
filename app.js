@@ -13,7 +13,7 @@ const manipulateOrdersRoute = require("./routes/admin/manipulateOrdersRoute");
 //user route
 const userAuthRoute = require("./routes/user/auth/userAuthRoute");
 const isUserRoute = require("./routes/user/auth/is-user");
-const placeOrder = require("./routes/user/placeOrder");
+const placeOrderRoute = require("./routes/user/placeOrderRoute");
 // Image upload
 const path = require("path");
 const multer = require("multer");
@@ -64,7 +64,7 @@ app.use("/admin", isAdminRoute, addFoodRoute);
 app.use("/admin", isAdminRoute, manipulateOrdersRoute);
 
 app.use("/user", userAuthRoute);
-app.use("/user", isUserRoute, placeOrder);
+app.use("/user", isUserRoute, placeOrderRoute);
 
 //Error Handling
 app.use((error, req, res, next) => {
@@ -77,6 +77,11 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.MOGOODB_DATABASE_LINK)
   .then((result) => {
-    app.listen(process.env.PORT);
+    const server = app.listen(process.env.PORT);
+    const io = require("./utils/getSocketConection").init(server);
+    io.on("connection", (socket) => {
+      console.log("client connected");
+      console.log(socket.id);
+    });
   })
   .catch((err) => console.log(err));
