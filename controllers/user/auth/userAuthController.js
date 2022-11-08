@@ -100,3 +100,71 @@ exports.verify = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.changePassword = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error(errors.errors[0].msg);
+      error.statusCode = 422;
+      throw error;
+    }
+    if (!req.userId) {
+      const error = new Error("Không xác định được user !");
+      error.statusCode = 401;
+      throw error;
+    }
+    const userId = req.userId;
+    const password = req.body.password;
+    const hashedPw = await bcrypt.hash(password, 12);
+    const user = await User.findById({ _id: userId });
+    console.log(password, await bcrypt.compare(user.password, password));
+    if (await bcrypt.compare(password, user.password)) {
+      const error = new Error(
+        "Mật khẩu mới không được trùng với mật khẩu trước !"
+      );
+      error.statusCode = 422;
+      throw error;
+    }
+    user.password = hashedPw;
+    await user.save();
+
+    res.status(200).json({ message: "Đổi mật khẩu thành công !" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.restorePassword = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    if (!(await User.exists({ email: email }))) {
+      const error = new Error("Email này chưa được đăng ký !");
+      error.statusCode = 422;
+      throw error;
+    }
+    const token = jwt.sign(
+      {
+        email: email,
+      },
+      process.env.TOKEN_PRIVATE_KEY,
+      { expiresIn: "0.5h" }
+    );
+    mailer(
+      email,
+      `Căn tin nhóm 18: Khôi phục mật khẩu `,
+      `<h2>Xin vui lòng click vào <a href="/">đường link này ${token} </a> để thay đổi mật khẩu</h2>
+
+      `
+    );
+    res.status(200).json({ message: "Email thay đổi mật khẩu đã được gửi !" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
