@@ -32,6 +32,7 @@ const addDish = async (req, res, next) => {
 
     res.status(200).json({
       content: dbRes,
+      ok: true,
     });
   } catch (err) {
     if (!err.statusCode) {

@@ -10,7 +10,8 @@ const seeOrders = async (req, res, next) => {
       .populate("order.object");
 
     res.status(200).json({
-      orders,
+      content: orders,
+      ok: true,
     });
   } catch (err) {
     if (!err.statusCode) {

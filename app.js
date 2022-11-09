@@ -83,10 +83,14 @@ mongoose
   .connect(process.env.MOGOODB_DATABASE_LINK)
   .then((result) => {
     const server = app.listen(process.env.PORT);
-    const io = require("./utils/getSocketConection").init(server);
+    const io = require("./utils/getSocketConnection").init(server);
     io.on("connection", (socket) => {
       console.log("client connected");
-      console.log(socket.id);
+      socket.emit("adminSocketId", socket.id);
+      socket.on("adminConnect", (adminSocketId) => {
+        require("./utils/adminSocket").init(adminSocketId);
+        console.log(adminSocketId);
+      });
     });
   })
   .catch((err) => console.log(err));

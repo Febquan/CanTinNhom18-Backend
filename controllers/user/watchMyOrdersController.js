@@ -9,6 +9,7 @@ watchMyOrdersAuthController = async (req, res, next) => {
       );
       res.status(200).json({
         orders: dbRes,
+        ok: true,
       });
     } else {
       const dbRes = await Orders.find({ email: req.params.email }).populate(
@@ -16,6 +17,7 @@ watchMyOrdersAuthController = async (req, res, next) => {
       );
       res.status(200).json({
         orders: dbRes,
+        ok: true,
       });
     }
   } catch (err) {

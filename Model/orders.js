@@ -14,8 +14,13 @@ const orderSchema = new Schema({
     require: true,
   },
   status: {
-    type: String, //onsite , paid ,trusted
+    type: String, //onsite , paid ,trusted ,waiting, doing
     require: true,
+  },
+  onSite: {
+    type: Boolean,
+    require: true,
+    default: true,
   },
   order: [
     {

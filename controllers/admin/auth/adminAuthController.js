@@ -28,7 +28,11 @@ exports.signup = (req, res, next) => {
     .then((result) => {
       res
         .status(201)
-        .json({ message: "Tạo admin thành công!", userId: result._id });
+        .json({
+          message: "Tạo admin thành công!",
+          userId: result._id,
+          ok: true,
+        });
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -68,7 +72,7 @@ exports.login = (req, res, next) => {
       );
       res
         .status(200)
-        .json({ token: token, adminId: loadedUser._id.toString() });
+        .json({ token: token, adminId: loadedUser._id.toString(), ok: true });
     })
     .catch((err) => {
       if (!err.statusCode) {

@@ -1,18 +1,15 @@
-const OrdersModel = require("../../Model/orders");
-
+const Dish = require("../../Model/dish");
 const io = require("../../utils/getSocketConnection");
-
 const completeOrdersController = async (req, res, next) => {
   try {
-    const orderId = req.body.orderId;
-
-    const order = await OrdersModel.findOneAndUpdate(
-      { _id: orderId },
-      { status: "waiting" }
+    const dishId = req.body.dishId;
+    io.getIO().emit("DishIsLock", { dishLock: dishId });
+    const lockDish = await Dish.findOneAndUpdate(
+      { _id: dishId },
+      { isAvailable: false }
     );
-    io.getIO().emit("OrderIsDone", { orderComplete: orderId });
     res.status(200).json({
-      content: order,
+      content: lockDish,
       ok: true,
     });
   } catch (err) {

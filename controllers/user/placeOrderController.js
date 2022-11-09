@@ -1,8 +1,11 @@
 const Orders = require("../../Model/orders");
 const Users = require("../../Model/user");
 const FastFoodAndDrink = require("../../Model/fastFoodAndDrink");
+const Dish = require("../../Model/dish");
 const roundTime = require("../../utils/roundTime");
 const mailer = require("../../utils/mailer");
+const io = require("../../utils/getSocketConnection");
+const adminSockets = require("../../utils/adminSocket");
 // const moment = require("moment-timezone");
 // const now = moment.tz(new Date(), "Asia/Ho_Chi_Minh").toString();
 const placeOrder = async (req, res, next) => {
@@ -18,21 +21,21 @@ const placeOrder = async (req, res, next) => {
     //is AllowPending
     let status = false;
 
-    let email = "";
-
     if (req.userId) {
       status = "trusted";
       user = await Users.findById(req.userId);
       //Time arrive
       var arrive_at = req.body.arrive_at;
-    } else {
-      status = "onsite";
-      if (!req.body.email) {
-        const error = new Error("Bạn chưa điền Email !");
+    }
+    //check Email
+    if (status === "onsite" && req.body.email) {
+      const re =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!re.test(req.body.email.toLowerCase())) {
+        const error = new Error("Email không hợp lệ !");
         error.statusCode = 422;
         throw error;
       }
-      email = req.body.email;
     }
 
     //Check FastFoodAndDrink available
@@ -49,6 +52,14 @@ const placeOrder = async (req, res, next) => {
         temp.amountAvailable = temp.amountAvailable - food.quantity;
         await temp.save();
       }
+      if (food.kind === "Dish") {
+        const temp = await Dish.findById(food.object._id);
+        if (!temp.isAvailable) {
+          const error = new Error(`Món ${temp.name} đã hết hàng ! `);
+          error.statusCode = 422;
+          throw error;
+        }
+      }
     }
     // place order
     let cost = 0;
@@ -56,8 +67,9 @@ const placeOrder = async (req, res, next) => {
       user: req.userId,
       order: order,
       cost: 0,
+      onSite: req.body.onSite,
       status: status,
-      email: status == "onsite" ? email : null,
+      email: req.body.email,
       created_at: new Date(),
       arrive_at:
         status == "onsite"
@@ -75,7 +87,7 @@ const placeOrder = async (req, res, next) => {
     const dbRes = await orderModel.save();
 
     //sendMail to unAuth user
-    if (status === "onsite") {
+    if (status === "onsite" && req.body.email) {
       mailer(
         dbRes.email,
         `Căn tin nhóm 18: Đơn hàng mã ${dbRes._id} `,
@@ -84,9 +96,13 @@ const placeOrder = async (req, res, next) => {
         `
       );
     }
-
+    //socket add
+    adminSockets.getAdminSocketIds().forEach((socket) => {
+      io.getIO().to(socket).emit("queueChange", "orderAdded");
+    });
     res.status(200).json({
       content: dbRes,
+      ok: true,
     });
   } catch (err) {
     if (!err.statusCode) {

@@ -54,6 +54,7 @@ const addFastMultipleFoodAndDrink = async (req, res, next) => {
     }
     res.status(200).json({
       content: dbRes,
+      ok: true,
     });
   } catch (err) {
     res.status(422).json({

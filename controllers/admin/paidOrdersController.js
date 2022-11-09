@@ -11,7 +11,8 @@ const paidOrders = async (req, res, next) => {
     await completeOrder.save();
 
     res.status(200).json({
-      orderPaid,
+      content: orderPaid,
+      ok: true,
     });
   } catch (err) {
     if (!err.statusCode) {

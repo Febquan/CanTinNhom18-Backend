@@ -33,7 +33,7 @@ exports.signup = async (req, res, next) => {
     );
     res
       .status(201)
-      .json({ message: "Tạo user thành công!", userId: result._id });
+      .json({ message: "Tạo user thành công!", userId: result._id, ok: true });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -70,7 +70,9 @@ exports.login = (req, res, next) => {
         process.env.TOKEN_PRIVATE_KEY
         // { expiresIn: "1h" }
       );
-      res.status(200).json({ token: token, userId: loadedUser._id.toString() });
+      res
+        .status(200)
+        .json({ token: token, userId: loadedUser._id.toString(), ok: true });
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -87,7 +89,7 @@ exports.verify = async (req, res, next) => {
     const isVerify = await bcrypt.compare(email, hashedEmail);
     if (isVerify == true) {
       await User.findOneAndUpdate({ email: email }, { emailVerify: true });
-      res.status(200).json({ message: "Xác thực Email thành công" });
+      res.status(200).json({ message: "Xác thực Email thành công", ok: true });
     } else {
       const error = new Error("Hệ thống không xác thực được email này !");
       error.statusCode = 401;
@@ -129,7 +131,7 @@ exports.changePassword = async (req, res, next) => {
     user.password = hashedPw;
     await user.save();
 
-    res.status(200).json({ message: "Đổi mật khẩu thành công !" });
+    res.status(200).json({ message: "Đổi mật khẩu thành công !", ok: true });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -160,7 +162,9 @@ exports.restorePassword = async (req, res, next) => {
 
       `
     );
-    res.status(200).json({ message: "Email thay đổi mật khẩu đã được gửi !" });
+    res
+      .status(200)
+      .json({ message: "Email thay đổi mật khẩu đã được gửi !", ok: true });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
