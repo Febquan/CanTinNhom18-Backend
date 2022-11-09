@@ -94,3 +94,5 @@ mongoose
     });
   })
   .catch((err) => console.log(err));
+
+console.log(process.env.NODE_ENV);
