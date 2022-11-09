@@ -91,7 +91,7 @@ const placeOrder = async (req, res, next) => {
       mailer(
         dbRes.email,
         `Căn tin nhóm 18: Đơn hàng mã ${dbRes._id} `,
-        `<h2>Xin vui lòng click vào <a href="http://localhost:8080/user/watchMyOrderAuth/${dbRes.email}">đường link này</a> để theo dõi đơn hàng của bạn</h2>
+        `<h2>Xin vui lòng click vào <a href="${process.env.APP_URL}/user/watchMyOrderAuth/${dbRes.email}">đường link này</a> để theo dõi đơn hàng của bạn</h2>
         
         `
       );
