@@ -29,6 +29,12 @@ const orderSchema = new Schema({
         type: Schema.Types.ObjectId,
         refPath: "order.kind",
       },
+      extraFood: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "ExtraFood",
+        },
+      ],
       quantity: Number,
       _id: false,
     },

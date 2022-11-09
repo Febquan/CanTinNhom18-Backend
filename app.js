@@ -16,6 +16,7 @@ const isUserRoute = require("./routes/user/auth/is-user");
 const placeOrderRoute = require("./routes/user/placeOrderRoute");
 const restorePasswordRoute = require("./routes/user/auth/restorePasswordRoute");
 const changePasswordRoute = require("./routes/user/auth/changePasswordRoute");
+const displayRoute = require("./routes/user/displayRoute");
 // Image upload
 const path = require("path");
 const multer = require("multer");
@@ -67,6 +68,7 @@ app.use("/admin", isAdminRoute, manipulateOrdersRoute);
 
 app.use("/user", userAuthRoute);
 app.use("/user", userAuthRoute);
+app.use("/user", displayRoute);
 app.use("/user", isUserRoute, placeOrderRoute);
 app.use("/user", isUserRoute, changePasswordRoute);
 app.use("/user", restorePasswordRoute);

@@ -2,6 +2,7 @@ const Orders = require("../../Model/orders");
 const Users = require("../../Model/user");
 const FastFoodAndDrink = require("../../Model/fastFoodAndDrink");
 const Dish = require("../../Model/dish");
+const ExtraFood = require("../../Model/extraFood");
 const roundTime = require("../../utils/roundTime");
 const mailer = require("../../utils/mailer");
 const io = require("../../utils/getSocketConnection");
@@ -53,11 +54,20 @@ const placeOrder = async (req, res, next) => {
         await temp.save();
       }
       if (food.kind === "Dish") {
-        const temp = await Dish.findById(food.object._id);
+        let temp = await Dish.findById(food.object._id);
         if (!temp.isAvailable) {
           const error = new Error(`Món ${temp.name} đã hết hàng ! `);
           error.statusCode = 422;
           throw error;
+        }
+        for (extraFood of food.extraFood) {
+          temp = await ExtraFood.findById(extraFood._id);
+
+          if (!temp.isAvailable) {
+            const error = new Error(`Món ${temp.name} đã hết hàng ! `);
+            error.statusCode = 422;
+            throw error;
+          }
         }
       }
     }
@@ -78,9 +88,13 @@ const placeOrder = async (req, res, next) => {
     });
 
     await orderModel.populate("order.object");
+    await orderModel.populate("order.extraFood");
     //calculate cost
     cost = orderModel.order.reduce(
-      (sum, cur) => sum + cur.object.price * cur.quantity,
+      (sum, cur) =>
+        sum +
+        cur.object.price * cur.quantity +
+        cur.extraFood.reduce((sum, cur) => sum + cur.price, 0),
       0
     );
     orderModel.cost = cost;
@@ -98,7 +112,7 @@ const placeOrder = async (req, res, next) => {
     }
     //socket add
     adminSockets.getAdminSocketIds().forEach((socket) => {
-      io.getIO().to(socket).emit("queueChange", "orderAdded");
+      io.getIO().to(socket).emit("QueueChange", "orderAdded");
     });
     res.status(200).json({
       content: dbRes,
