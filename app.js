@@ -70,7 +70,9 @@ app.use("/user", userAuthRoute);
 app.use("/user", isUserRoute, placeOrderRoute);
 app.use("/user", isUserRoute, changePasswordRoute);
 app.use("/user", restorePasswordRoute);
-
+app.get("/", (req, res, next) => {
+  res.send("hello");
+});
 //Error Handling
 app.use((error, req, res, next) => {
   console.log(error);
