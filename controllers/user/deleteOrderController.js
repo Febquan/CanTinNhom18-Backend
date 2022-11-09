@@ -11,7 +11,7 @@ const deleteOrder = async (req, res, next) => {
     }
     await order.remove();
     adminSockets.getAdminSocketIds().forEach((socket) => {
-      io.getIO().to(socket).emit("queueChange", "orderRemoved");
+      io.getIO().to(socket).emit("QueueChange", "orderRemoved");
     });
     res.status(200).json({
       content: order,
