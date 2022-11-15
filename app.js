@@ -70,7 +70,6 @@ app.use("/admin", isAdminRoute, addFoodRoute);
 app.use("/admin", isAdminRoute, manipulateOrdersRoute);
 
 app.use("/user", userAuthRoute);
-app.use("/user", userAuthRoute);
 app.use("/user", displayRoute);
 app.use("/user", isUserRoute, placeOrderRoute);
 app.use("/user", isUserRoute, changePasswordRoute);
