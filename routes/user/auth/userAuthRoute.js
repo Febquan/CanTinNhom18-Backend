@@ -11,7 +11,7 @@ router.post(
   [
     body("email")
       .isEmail()
-      .withMessage("Please enter a valid email.")
+      .withMessage("Email không hợp lệ")
       .custom((value, { req }) => {
         return User.findOne({ email: value }).then((AdminDoc) => {
           if (AdminDoc) {
