@@ -50,7 +50,12 @@ exports.login = (req, res, next) => {
     .then((user) => {
       if (!user) {
         const error = new Error("User không tồn tại !");
-        error.statusCode = 401;
+        error.statusCode = 400;
+        throw error;
+      }
+      if (!user.emailVerify) {
+        const error = new Error("Bạn chưa xác thực tài khoản");
+        error.statusCode = 400;
         throw error;
       }
       loadedUser = user;
@@ -59,7 +64,7 @@ exports.login = (req, res, next) => {
     .then((isEqual) => {
       if (!isEqual) {
         const error = new Error("Sai mật khẩu !");
-        error.statusCode = 401;
+        error.statusCode = 400;
         throw error;
       }
       const token = jwt.sign(
@@ -92,7 +97,7 @@ exports.verify = async (req, res, next) => {
       res.status(200).json({ message: "Xác thực Email thành công", ok: true });
     } else {
       const error = new Error("Hệ thống không xác thực được email này !");
-      error.statusCode = 401;
+      error.statusCode = 400;
       throw error;
     }
   } catch (err) {
@@ -113,7 +118,7 @@ exports.changePassword = async (req, res, next) => {
     }
     if (!req.userId) {
       const error = new Error("Không xác định được user !");
-      error.statusCode = 401;
+      error.statusCode = 400;
       throw error;
     }
     const userId = req.userId;

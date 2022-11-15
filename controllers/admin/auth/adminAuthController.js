@@ -48,7 +48,7 @@ exports.login = (req, res, next) => {
     .then((admin) => {
       if (!admin) {
         const error = new Error("Admin không tồn tại !");
-        error.statusCode = 401;
+        error.statusCode = 400;
         throw error;
       }
       loadedUser = admin;
@@ -57,7 +57,7 @@ exports.login = (req, res, next) => {
     .then((isEqual) => {
       if (!isEqual) {
         const error = new Error("Sai mật khẩu !");
-        error.statusCode = 401;
+        error.statusCode = 400;
         throw error;
       }
       const token = jwt.sign(
