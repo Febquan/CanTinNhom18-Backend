@@ -3,7 +3,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
-
+const cors = require(cors);
+//cors
+app.use(cors());
+app.options("*", cors());
 //admin route
 const adminAuthRoute = require("./routes/admin/auth/adminAuthRoute");
 const addFoodRoute = require("./routes/admin/addFoodRoute");
