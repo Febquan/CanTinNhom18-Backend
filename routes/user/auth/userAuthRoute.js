@@ -20,8 +20,11 @@ router.post(
         });
       })
       .normalizeEmail(),
-    body("password").trim().isLength({ min: 5 }),
-    body("name").trim().not().isEmpty(),
+    body("password")
+      .trim()
+      .isLength({ min: 5 })
+      .withMessage("Mật khẩu phải trên 5 ký tự"),
+    body("name").trim().not().isEmpty().withMessage("Tên không được bỏ trống"),
   ],
   userAuthController.signup
 );
