@@ -26,13 +26,11 @@ exports.signup = (req, res, next) => {
       return admin.save();
     })
     .then((result) => {
-      res
-        .status(201)
-        .json({
-          message: "Tạo admin thành công!",
-          userId: result._id,
-          ok: true,
-        });
+      res.status(201).json({
+        message: "Tạo admin thành công!",
+        userId: result._id,
+        ok: true,
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {
