@@ -125,7 +125,6 @@ exports.changePassword = async (req, res, next) => {
     const password = req.body.password;
     const hashedPw = await bcrypt.hash(password, 12);
     const user = await User.findById({ _id: userId });
-    console.log(password, await bcrypt.compare(user.password, password));
     if (await bcrypt.compare(password, user.password)) {
       const error = new Error(
         "Mật khẩu mới không được trùng với mật khẩu trước !"
@@ -145,9 +144,10 @@ exports.changePassword = async (req, res, next) => {
   }
 };
 
-exports.restorePassword = async (req, res, next) => {
+exports.sendEmailRestorePassword = async (req, res, next) => {
   try {
     const email = req.body.email;
+
     if (!(await User.exists({ email: email }))) {
       const error = new Error("Email này chưa được đăng ký !");
       error.statusCode = 422;
@@ -160,16 +160,41 @@ exports.restorePassword = async (req, res, next) => {
       process.env.TOKEN_PRIVATE_KEY,
       { expiresIn: "0.5h" }
     );
-    mailer(
+    await mailer(
       email,
       `Căn tin nhóm 18: Khôi phục mật khẩu `,
-      `<h2>Xin vui lòng click vào <a href="FRONT_END_URL/changePassword/${token}">đường link này</a> để thay đổi mật khẩu</h2>
+      `<h2>Xin vui lòng click vào <a href="${process.env.FRONT_END_URL}/user/restorePassword/${token}">đường link này</a> để thay đổi mật khẩu</h2>
 
       `
     );
     res
       .status(200)
       .json({ message: "Email thay đổi mật khẩu đã được gửi !", ok: true });
+  } catch (err) {
+    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.RestorePassword = async (req, res, next) => {
+  try {
+    console.log(req.body.token);
+    const decodedToken = jwt.verify(
+      req.body.token,
+      process.env.TOKEN_PRIVATE_KEY
+    );
+
+    const userEmail = decodedToken.email;
+    const password = req.body.password;
+    const hashedPw = await bcrypt.hash(password, 12);
+    const user = await User.findOne({ email: userEmail });
+    user.password = hashedPw;
+    await user.save();
+
+    res.status(200).json({ message: "Đổi mật khẩu thành công !", ok: true });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;

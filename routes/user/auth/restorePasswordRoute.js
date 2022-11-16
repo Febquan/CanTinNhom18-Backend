@@ -3,5 +3,9 @@ const userAuthController = require("../../../controllers/user/auth/userAuthContr
 
 const router = express.Router();
 
-router.post("/restorePassword", userAuthController.restorePassword);
+router.post(
+  "/sendEmailRestorePassword",
+  userAuthController.sendEmailRestorePassword
+);
+router.post("/restorePassword", userAuthController.RestorePassword);
 module.exports = router;
