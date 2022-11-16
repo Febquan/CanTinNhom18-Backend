@@ -163,7 +163,7 @@ exports.restorePassword = async (req, res, next) => {
     mailer(
       email,
       `Căn tin nhóm 18: Khôi phục mật khẩu `,
-      `<h2>Xin vui lòng click vào <a href="/">đường link này ${token} </a> để thay đổi mật khẩu</h2>
+      `<h2>Xin vui lòng click vào <a href="FRONT_END_URL/changePassword/${token}">đường link này</a> để thay đổi mật khẩu</h2>
 
       `
     );
