@@ -28,7 +28,16 @@ const completeOrdersSchema = new Schema({
         type: Schema.Types.ObjectId,
         refPath: "order.kind",
       },
-      quantity: Number,
+      extraFood: [
+        {
+          object: {
+            type: Schema.Types.ObjectId,
+            ref: "ExtraFood",
+          },
+          quantity: { type: Number, default: 1 },
+        },
+      ],
+      quantity: { type: Number, default: 1 },
       _id: false,
     },
   ],

@@ -27,7 +27,11 @@ const addDish = async (req, res, next) => {
       throw error;
     }
     // Add dish
-    const a = new Dish({ name: name, price: price, imgUrl: imgUrl });
+    const a = new Dish({
+      name: name,
+      price: price,
+      imgUrl: process.env.APP_URL + imgUrl,
+    });
     const dbRes = await a.save();
 
     res.status(200).json({

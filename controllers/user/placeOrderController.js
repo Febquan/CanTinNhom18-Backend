@@ -61,8 +61,7 @@ const placeOrder = async (req, res, next) => {
           throw error;
         }
         for (extraFood of food.extraFood) {
-          temp = await ExtraFood.findById(extraFood._id);
-
+          temp = await ExtraFood.findById(extraFood.object._id);
           if (!temp.isAvailable) {
             const error = new Error(`Món ${temp.name} đã hết hàng ! `);
             error.statusCode = 422;
@@ -88,13 +87,16 @@ const placeOrder = async (req, res, next) => {
     });
 
     await orderModel.populate("order.object");
-    await orderModel.populate("order.extraFood");
+    await orderModel.populate("order.extraFood.object");
     //calculate cost
     cost = orderModel.order.reduce(
       (sum, cur) =>
         sum +
         cur.object.price * cur.quantity +
-        cur.extraFood.reduce((sum, cur) => sum + cur.price, 0),
+        cur.extraFood.reduce(
+          (sum, cur) => sum + cur.object.price * cur.quantity,
+          0
+        ),
       0
     );
     orderModel.cost = cost;

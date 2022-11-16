@@ -19,6 +19,10 @@ const FFADSchema = new Schema({
     type: Number,
     default: 0,
   },
+  isDrink: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("FastFoodAndDrink", FFADSchema);

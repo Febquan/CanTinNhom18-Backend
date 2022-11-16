@@ -6,6 +6,7 @@ const orderSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+
   cost: {
     type: Number,
   },
@@ -29,13 +30,19 @@ const orderSchema = new Schema({
         type: Schema.Types.ObjectId,
         refPath: "order.kind",
       },
+      description: {
+        type: String,
+      },
       extraFood: [
         {
-          type: Schema.Types.ObjectId,
-          ref: "ExtraFood",
+          object: {
+            type: Schema.Types.ObjectId,
+            ref: "ExtraFood",
+          },
+          quantity: { type: Number, default: 1 },
         },
       ],
-      quantity: Number,
+      quantity: { type: Number, default: 1 },
       _id: false,
     },
   ],

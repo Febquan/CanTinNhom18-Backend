@@ -14,6 +14,7 @@ const addFastFoodAndDrink = async (req, res, next) => {
     const name = req.body.name;
     const price = req.body.price;
     const amount = req.body.amount;
+    const isDrink = req.body.isDrink;
     const imgUrl = req.body.imgUrl;
     // amount <=0
     if (amount <= 0) {
@@ -40,6 +41,7 @@ const addFastFoodAndDrink = async (req, res, next) => {
       price: price,
       amountAvailable: amount,
       imgUrl: imgUrl,
+      isDrink: isDrink,
     });
 
     const dbRes = await a.save();

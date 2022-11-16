@@ -10,7 +10,7 @@ seeAllFoodController = async (req, res, next) => {
     const fastFoodAndDrink = await FastFoodAndDrink.find();
 
     res.status(200).json({
-      orders: {
+      food: {
         dish,
         extraFood,
         fastFoodAndDrink,
