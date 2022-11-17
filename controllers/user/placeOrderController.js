@@ -76,6 +76,7 @@ const placeOrder = async (req, res, next) => {
       user: req.userId,
       order: order,
       cost: 0,
+      description: req.body.description,
       onSite: req.body.onSite,
       status: status,
       email: req.body.email,

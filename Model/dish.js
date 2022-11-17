@@ -15,6 +15,10 @@ const dishesSchema = new Schema({
     type: Number,
     require: true,
   },
+  info: {
+    type: String,
+    require: true,
+  },
   isAvailable: {
     type: Boolean,
     require: true,

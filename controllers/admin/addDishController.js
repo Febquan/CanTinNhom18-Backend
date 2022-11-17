@@ -19,6 +19,7 @@ const addDish = async (req, res, next) => {
     const name = req.body.name;
     const price = req.body.price;
     const imgUrl = req.file.path;
+    const info = req.body.info;
     //Find Name already exit
     const exist = await Dish.exists({ name: name });
     if (exist) {
@@ -30,6 +31,7 @@ const addDish = async (req, res, next) => {
     const a = new Dish({
       name: name,
       price: price,
+      info: info,
       imgUrl: process.env.APP_URL + imgUrl,
     });
     const dbRes = await a.save();
