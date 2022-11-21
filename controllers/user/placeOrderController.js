@@ -19,17 +19,18 @@ const placeOrder = async (req, res, next) => {
       error.statusCode = 422;
       throw error;
     }
-    //is AllowPending
-    let status = false;
 
+    //is AllowPending
+    let status = req.body.status;
+    let arrive_at = "";
     if (req.userId) {
       status = "trusted";
       user = await Users.findById(req.userId);
       //Time arrive
-      var arrive_at = req.body.arrive_at;
+      arrive_at = req.body.arrive_at;
     }
     //check Email
-    if (status === "onsite" && req.body.email) {
+    if (status === "onSite" && req.body.email) {
       const re =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (!re.test(req.body.email.toLowerCase())) {
@@ -71,6 +72,7 @@ const placeOrder = async (req, res, next) => {
       }
     }
     // place order
+
     let cost = 0;
     const orderModel = new Orders({
       user: req.userId,
@@ -81,10 +83,7 @@ const placeOrder = async (req, res, next) => {
       status: status,
       email: req.body.email,
       created_at: new Date(),
-      arrive_at:
-        status == "onsite"
-          ? roundTime(undefined, 15)
-          : roundTime(arrive_at, 15),
+      arrive_at: roundTime(arrive_at, 15),
     });
 
     await orderModel.populate("order.object");
@@ -104,7 +103,7 @@ const placeOrder = async (req, res, next) => {
     const dbRes = await orderModel.save();
 
     //sendMail to unAuth user
-    if (status === "onsite" && req.body.email) {
+    if (status === "onSite" && req.body.email) {
       mailer(
         dbRes.email,
         `Căn tin nhóm 18: Đơn hàng mã ${dbRes._id} `,
