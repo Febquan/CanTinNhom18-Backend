@@ -100,6 +100,7 @@ const placeOrder = async (req, res, next) => {
       0
     );
     orderModel.cost = cost;
+    const QueueChangeData = orderModel;
     const dbRes = await orderModel.save();
 
     //sendMail to unAuth user
@@ -114,7 +115,10 @@ const placeOrder = async (req, res, next) => {
     }
     //socket add
     adminSockets.getAdminSocketIds().forEach((socket) => {
-      io.getIO().to(socket).emit("QueueChange", "orderAdded");
+      io.getIO().to(socket).emit("QueueChange", {
+        message: "OrderAdded",
+        content: QueueChangeData,
+      });
     });
     res.status(200).json({
       content: dbRes,

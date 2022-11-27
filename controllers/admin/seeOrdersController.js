@@ -7,7 +7,9 @@ const seeOrders = async (req, res, next) => {
         arrive_at: 1,
         created_at: 1,
       })
-      .populate("order.object");
+      .populate("user")
+      .populate("order.object")
+      .populate("order.extraFood.object");
 
     res.status(200).json({
       content: orders,

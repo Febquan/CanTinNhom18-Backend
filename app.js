@@ -92,10 +92,9 @@ mongoose
     const io = require("./utils/getSocketConnection").init(server);
     io.on("connection", (socket) => {
       console.log("client connected");
-      socket.emit("adminSocketId", socket.id);
       socket.on("adminConnect", (adminSocketId) => {
         require("./utils/adminSocket").init(adminSocketId);
-        console.log(adminSocketId);
+        console.log("admin connected", adminSocketId);
       });
     });
   })

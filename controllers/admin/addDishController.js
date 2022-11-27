@@ -32,7 +32,7 @@ const addDish = async (req, res, next) => {
       name: name,
       price: price,
       info: info,
-      imgUrl: process.env.APP_URL + imgUrl,
+      imgUrl: process.env.APP_URL + "/" + imgUrl,
     });
     const dbRes = await a.save();
 

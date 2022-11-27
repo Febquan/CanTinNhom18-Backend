@@ -1,6 +1,6 @@
 const express = require("express");
 const { body } = require("express-validator");
-
+const isUserRoute = require("./is-user");
 const User = require("../../../Model/user");
 const userAuthController = require("../../../controllers/user/auth/userAuthController");
 
@@ -33,4 +33,5 @@ router.post("/login", userAuthController.login);
 
 router.get("/verify", userAuthController.verify);
 
+router.get("/checkAutoLogin", isUserRoute, userAuthController.checkAutoLogin);
 module.exports = router;

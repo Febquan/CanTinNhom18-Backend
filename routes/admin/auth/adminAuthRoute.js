@@ -3,7 +3,7 @@ const { body } = require("express-validator");
 
 const Admin = require("../../../Model/admin");
 const adminAuthController = require("../../../controllers/admin/auth/adminAuthController");
-
+const isAdminRoute = require("./is-admin");
 const router = express.Router();
 
 router.post(
@@ -27,5 +27,5 @@ router.post(
 );
 
 router.post("/login", adminAuthController.login);
-
+router.get("/checkAutoLogin", isAdminRoute, adminAuthController.checkAutoLogin);
 module.exports = router;
