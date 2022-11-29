@@ -6,6 +6,7 @@ const setOrderStatusController = require("../../controllers/admin/setOrdersStatu
 const paidOrdersController = require("../../controllers/admin/paidOrdersController");
 const seeOneOrderController = require("../../controllers/admin/seeOneOrdersController");
 const searchEmailController = require("../../controllers/admin/searchEmailController");
+const emailAndIdSearchController = require("../../controllers/admin/emailAndIdSearchController");
 // const doOrderController = require("../../controllers/admin/doOrderController");
 router.get("/seeOrders", seeOrdersController);
 router.post("/setOrderStatus", setOrderStatusController);
@@ -16,6 +17,12 @@ router.post(
   [body("email").isEmail().withMessage("Email không hợp lệ")],
   searchEmailController
 );
+router.post(
+  "/searchEmailAndId",
+  [body("search").isEmail().withMessage("Email không hợp lệ")],
+  emailAndIdSearchController
+);
+
 // router.post("/doOrder", doOrderController);
 module.exports = router;
 searchEmailController;
