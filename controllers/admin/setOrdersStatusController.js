@@ -5,12 +5,14 @@ const io = require("../../utils/getSocketConnection");
 const completeOrdersController = async (req, res, next) => {
   try {
     const orderId = req.body.orderId;
-
+    const status = req.body.status;
     const order = await OrdersModel.findOneAndUpdate(
       { _id: orderId },
-      { status: "waiting" }
+      { status: status }
     );
-    io.getIO().emit("OrderIsDone", { orderComplete: orderId });
+    if (status === "waiting") {
+      io.getIO().emit("OrderIsDone", { orderComplete: orderId });
+    }
     res.status(200).json({
       content: order,
       ok: true,

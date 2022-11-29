@@ -65,8 +65,8 @@ exports.login = (req, res, next) => {
           email: loadedUser.email,
           adminId: loadedUser._id.toString(),
         },
-        process.env.TOKEN_PRIVATE_KEY
-        // { expiresIn: "1h" }
+        process.env.TOKEN_PRIVATE_KEY,
+        { expiresIn: "24h" }
       );
       res
         .status(200)
