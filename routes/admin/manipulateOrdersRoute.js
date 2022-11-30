@@ -7,6 +7,8 @@ const paidOrdersController = require("../../controllers/admin/paidOrdersControll
 const seeOneOrderController = require("../../controllers/admin/seeOneOrdersController");
 const searchEmailController = require("../../controllers/admin/searchEmailController");
 const emailAndIdSearchController = require("../../controllers/admin/emailAndIdSearchController");
+const findOrderAndUpdateController = require("../../controllers/admin/findOrderAndUpdateController");
+const findOrderAndDeleteController = require("../../controllers/admin/findOrderAndDeleteController");
 // const doOrderController = require("../../controllers/admin/doOrderController");
 router.get("/seeOrders", seeOrdersController);
 router.post("/setOrderStatus", setOrderStatusController);
@@ -22,7 +24,8 @@ router.post(
   [body("search").isEmail().withMessage("Email không hợp lệ")],
   emailAndIdSearchController
 );
-
+router.post("/findOrderAndUpdate", findOrderAndUpdateController);
+router.post("/findOrderAndDelete", findOrderAndDeleteController);
 // router.post("/doOrder", doOrderController);
 module.exports = router;
 searchEmailController;
