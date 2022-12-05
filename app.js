@@ -12,6 +12,7 @@ const adminAuthRoute = require("./routes/admin/auth/adminAuthRoute");
 const addFoodRoute = require("./routes/admin/addFoodRoute");
 const isAdminRoute = require("./routes/admin/auth/is-admin");
 const manipulateOrdersRoute = require("./routes/admin/manipulateOrdersRoute");
+const storageRoute = require("./routes/admin/storageRoute");
 
 //user route
 const userAuthRoute = require("./routes/user/auth/userAuthRoute");
@@ -68,6 +69,7 @@ app.use((req, res, next) => {
 app.use("/admin", adminAuthRoute);
 app.use("/admin", isAdminRoute, addFoodRoute);
 app.use("/admin", isAdminRoute, manipulateOrdersRoute);
+app.use("/admin", isAdminRoute, storageRoute);
 
 app.use("/user", userAuthRoute);
 app.use("/user", displayRoute);

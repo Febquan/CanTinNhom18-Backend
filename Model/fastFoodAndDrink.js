@@ -15,10 +15,15 @@ const FFADSchema = new Schema({
     type: Number,
     require: true,
   },
-  amountAvailable: {
-    type: Number,
-    default: 0,
-  },
+  batch: [
+    {
+      buyDate: Date,
+      initialQuantity: Number,
+      quantity: Number,
+      expiredDated: Date,
+      buyPrice: Number,
+    },
+  ],
   isDrink: {
     type: Boolean,
     default: false,

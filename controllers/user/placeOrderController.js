@@ -7,6 +7,7 @@ const roundTime = require("../../utils/roundTime");
 const mailer = require("../../utils/mailer");
 const io = require("../../utils/getSocketConnection");
 const adminSockets = require("../../utils/adminSocket");
+const dayjs = require("dayjs");
 // const moment = require("moment-timezone");
 // const now = moment.tz(new Date(), "Asia/Ho_Chi_Minh").toString();
 const placeOrder = async (req, res, next) => {
@@ -41,17 +42,54 @@ const placeOrder = async (req, res, next) => {
     }
 
     //Check FastFoodAndDrink available
-    for (food of order) {
+    //Tracking batch of FastFoodAndDrink
+    for ([index, food] of order.entries()) {
       if (food.kind === "FastFoodAndDrink") {
+        const batchInfo = [];
         const temp = await FastFoodAndDrink.findById(food.object._id);
-        if (temp.amountAvailable < food.quantity) {
+        let amountAvailable = temp.batch.reduce(
+          (amountAvailable, el) => amountAvailable + el.quantity,
+          0
+        );
+
+        if (amountAvailable < food.quantity) {
           const error = new Error(
-            `Sản phẩm ${temp.name} này chỉ còn lại ${temp.amountAvailable} so với số lượng cần là ${food.quantity} !`
+            `Sản phẩm ${temp.name} này chỉ còn lại ${amountAvailable} so với số lượng cần là ${food.quantity} !`
           );
           error.statusCode = 422;
           throw error;
         }
-        temp.amountAvailable = temp.amountAvailable - food.quantity;
+
+        let remain = food.quantity;
+
+        for ([index2, batch] of temp.batch.entries()) {
+          if (dayjs().diff(dayjs(batch.expiredDated)) < 0) {
+            remain = batch.quantity - remain;
+
+            if (remain >= 0) {
+              const takeOut = temp.batch[index2].quantity - remain;
+              temp.batch[index2].quantity = remain;
+              batchInfo.push({
+                quantity: takeOut,
+                expiredDated: temp.batch[index2].expiredDated,
+                buyDate: temp.batch[index2].buyDate,
+              });
+              break;
+            }
+            if (remain < 0) {
+              const takeOut = temp.batch[index2].quantity;
+              temp.batch[index2].quantity = 0;
+              batchInfo.push({
+                quantity: takeOut,
+                expiredDated: temp.batch[index2].expiredDated,
+                buyDate: temp.batch[index2].buyDate,
+              });
+              remain = -remain;
+            }
+          }
+        }
+
+        order[index].batchInfo = batchInfo;
         await temp.save();
       }
       if (food.kind === "Dish") {
