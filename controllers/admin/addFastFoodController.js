@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const fastFoodAndDrink = require("../../Model/fastFoodAndDrink");
+const dayjs = require("dayjs");
 
 const addFastFoodAndDrink = async (req, res, next) => {
   try {
@@ -48,6 +49,7 @@ const addFastFoodAndDrink = async (req, res, next) => {
         buyPrice,
         initialQuantity,
       });
+      exist.batch.sort((a, b) => dayjs(a.expiredDated).diff(b.expiredDated));
       dbRes = await exist.save();
     }
     if (!exist) {

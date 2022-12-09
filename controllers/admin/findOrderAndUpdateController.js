@@ -62,7 +62,7 @@ const findOrderAndUpdate = async (req, res, next) => {
 
         if (quantityChange < 0) {
           let remain = -quantityChange;
-          orderUpdated.order[index].quantity -= quantityChange;
+          orderUpdated.order[index].quantity += quantityChange;
           for ([index3, batchOrder] of item.batchInfo.entries()) {
             const index2 = oldFFAD.batch.findIndex(
               (el) =>
@@ -71,12 +71,14 @@ const findOrderAndUpdate = async (req, res, next) => {
             );
             let plus = remain;
             remain = batchOrder.quantity - remain;
-            console.log(remain);
-            if (remain > 0) {
+
+            if (remain >= 0) {
               orderUpdated.order[index].batchInfo[index3].quantity = remain;
 
               oldFFAD.batch[index2].quantity =
                 oldFFAD.batch[index2].quantity + plus;
+
+              break;
             }
             if (remain < 0) {
               oldFFAD.batch[index2].quantity =
@@ -89,9 +91,17 @@ const findOrderAndUpdate = async (req, res, next) => {
 
         await oldFFAD.save();
       }
+
+      if (item.kind == "Dish") {
+        orderUpdated.order[index] = order.order[index];
+      }
     }
 
     // console.log(orderUpdated.order[0].batchInfo, "order moi");
+    orderUpdated.cost = order.cost;
+    orderUpdated.created_at = order.created_at;
+    orderUpdated.onSite = order.onSite;
+    orderUpdated.status = order.status;
     await orderUpdated.save();
     res.status(200).json({
       content: orderUpdated,

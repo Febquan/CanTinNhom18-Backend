@@ -51,6 +51,9 @@ const placeOrder = async (req, res, next) => {
           (amountAvailable, el) => amountAvailable + el.quantity,
           0
         );
+        if (!temp.isAvailable) {
+          throw new Error(`Sản phẩm ${temp.name} đã bị khóa`);
+        }
 
         if (amountAvailable < food.quantity) {
           const error = new Error(

@@ -15,6 +15,10 @@ const FFADSchema = new Schema({
     type: Number,
     require: true,
   },
+  isAvailable: {
+    type: Boolean,
+    default: true,
+  },
   batch: [
     {
       buyDate: Date,
