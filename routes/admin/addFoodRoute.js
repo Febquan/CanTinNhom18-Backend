@@ -8,6 +8,9 @@ const lockDishController = require("../../controllers/admin/lockDishController")
 const addExtraFoodController = require("../../controllers/admin/addExtraFoodController");
 const lockExtraFoodController = require("../../controllers/admin/lockExtraFoodController");
 const toggleAvailableController = require("../../controllers/admin/toggleAvailable");
+const searchFoodController = require("../../controllers/admin/searchFoodController");
+const findFoodAndDeleteController = require("../../controllers/admin/findFoodAndDeleteController");
+const findFoodAndUpdateController = require("../../controllers/admin/findFoodAndUpdateController");
 const router = express.Router();
 
 router.post(
@@ -33,4 +36,8 @@ router.post("/addExtraFood", addExtraFoodController);
 router.post("/lockExtraFood", lockExtraFoodController);
 
 router.post("/toggleAvailable", toggleAvailableController);
+router.post("/searchFood", searchFoodController);
+router.post("/findFoodAndDelete", findFoodAndDeleteController);
+router.post("/findFoodAndUpdate", findFoodAndUpdateController);
+
 module.exports = router;
