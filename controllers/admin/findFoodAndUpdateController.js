@@ -11,6 +11,8 @@ const findFoodAndUpdate = async (req, res, next) => {
     const name = req.body.name;
     const price = req.body.price;
     const isAvailable = req.body.isAvailable;
+    const amountAvailable = req.body.amountAvailable;
+    const everyDayAmount = req.body.everyDayAmount;
     const type = req.body.type;
     let imgUrl = "";
     let info = "";
@@ -36,6 +38,8 @@ const findFoodAndUpdate = async (req, res, next) => {
         price,
         isAvailable,
         imgUrl,
+        amountAvailable,
+        everyDayAmount,
         info,
       });
       if (req.file) {
@@ -58,6 +62,8 @@ const findFoodAndUpdate = async (req, res, next) => {
         price,
         isAvailable,
         imgUrl,
+        amountAvailable,
+        everyDayAmount,
       });
 
       //findOrderWithExtraFoodIn

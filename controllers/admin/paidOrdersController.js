@@ -1,3 +1,4 @@
+const dayjs = require("dayjs");
 const completeOrdersModel = require("../../Model/completeOrders");
 const OrdersModel = require("../../Model/orders");
 const paidOrders = async (req, res, next) => {
@@ -7,6 +8,7 @@ const paidOrders = async (req, res, next) => {
     const completeOrder = new completeOrdersModel({
       ...orderPaid._doc,
       status: "paid",
+      pay_at: dayjs(),
     });
     await completeOrder.save();
 

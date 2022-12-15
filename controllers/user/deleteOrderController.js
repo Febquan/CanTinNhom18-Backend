@@ -1,9 +1,11 @@
 const OrdersModel = require("../../Model/orders");
 const FFADModel = require("../../Model/fastFoodAndDrink");
+const DishModel = require("../../Model/dish");
+const ExtraFoodModel = require("../../Model/extraFood");
 const io = require("../../utils/getSocketConnection");
 const adminSockets = require("../../utils/adminSocket");
 const dayjs = require("dayjs");
-
+const checkToday = require("../../utils/isToday");
 const deleteOrder = async (req, res, next) => {
   try {
     const order = await OrdersModel.findById(req.body.orderId);
@@ -28,6 +30,19 @@ const deleteOrder = async (req, res, next) => {
         }
 
         await FFAD.save();
+      }
+      if (item.kind === "Dish" && checkToday(order.arrive_at)) {
+        const dishFound = await DishModel.findById(item.object._id);
+        dishFound.amountAvailable = dishFound.amountAvailable + item.quantity;
+        await dishFound.save();
+        for (extraFood of item.extraFood) {
+          const extraFoodFound = await ExtraFoodModel.findById(
+            extraFood.object._id
+          );
+          extraFoodFound.amountAvailable =
+            extraFoodFound.amountAvailable + extraFood.quantity;
+          await extraFoodFound.save();
+        }
       }
     }
 

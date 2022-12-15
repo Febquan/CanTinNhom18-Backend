@@ -17,10 +17,7 @@ const completeOrdersSchema = new Schema({
     type: String, //onsite  ,trusted
     require: true,
   },
-  statusCode: {
-    type: Number, //2,1
-    require: true,
-  },
+
   order: [
     {
       kind: String,
@@ -41,7 +38,7 @@ const completeOrdersSchema = new Schema({
       _id: false,
     },
   ],
-  created_at: { type: Date, require: true },
+  pay_at: { type: Date, require: true },
 });
 
 module.exports = mongoose.model("CompleteOrders", completeOrdersSchema);

@@ -8,8 +8,10 @@ const mailer = require("../../utils/mailer");
 const io = require("../../utils/getSocketConnection");
 const adminSockets = require("../../utils/adminSocket");
 const dayjs = require("dayjs");
+const checkToday = require("../../utils/isToday");
 // const moment = require("moment-timezone");
 // const now = moment.tz(new Date(), "Asia/Ho_Chi_Minh").toString();
+
 const placeOrder = async (req, res, next) => {
   try {
     //Take out sent information
@@ -28,8 +30,8 @@ const placeOrder = async (req, res, next) => {
       status = "trusted";
       user = await Users.findById(req.userId);
       //Time arrive
-      arrive_at = req.body.arrive_at;
     }
+    arrive_at = req.body.arrive_at;
     //check Email
     if (status === "onSite" && req.body.email) {
       const re =
@@ -41,12 +43,72 @@ const placeOrder = async (req, res, next) => {
       }
     }
 
-    //Check FastFoodAndDrink available
-    //Tracking batch of FastFoodAndDrink
-    for ([index, food] of order.entries()) {
-      if (food.kind === "FastFoodAndDrink") {
-        const batchInfo = [];
-        const temp = await FastFoodAndDrink.findById(food.object._id);
+    //Counting amount of food
+
+    let amountOfFood = [];
+    let amountOfExtraFood = [];
+
+    for (food of order) {
+      const existIndex = amountOfFood.findIndex(
+        (el) => el._id == food.object._id
+      );
+
+      if (existIndex == -1) {
+        amountOfFood.push({
+          _id: food.object._id,
+          kind: food.kind,
+          quantity: food.quantity,
+        });
+      }
+      if (existIndex != -1) {
+        amountOfFood[existIndex].quantity += food.quantity;
+      }
+      if (!food.extraFood) {
+        continue;
+      }
+      for (extraFood of food.extraFood) {
+        const existExtraFoodIndex = amountOfExtraFood.findIndex(
+          (el) => el._id == extraFood.object._id
+        );
+
+        if (existExtraFoodIndex == -1) {
+          amountOfExtraFood.push({
+            _id: extraFood.object._id,
+            quantity: extraFood.quantity,
+          });
+        }
+        if (existExtraFoodIndex != -1) {
+          amountOfExtraFood[existExtraFoodIndex].quantity += extraFood.quantity;
+        }
+      }
+    }
+
+    // Check all food and FFAD is available to order
+    const isToday = checkToday(arrive_at);
+
+    for (food of amountOfFood) {
+      if (food.kind == "Dish") {
+        let temp = await Dish.findById(food._id);
+        if (temp.amountAvailable == 0 && isToday) {
+          const error = new Error(`Món ${temp.name} đã hết hàng ! `);
+          error.statusCode = 422;
+          throw error;
+        }
+        if (!temp.isAvailable) {
+          const error = new Error(`Món ${temp.name} đã bị khóa ! `);
+          error.statusCode = 422;
+          throw error;
+        }
+        if (temp.amountAvailable < food.quantity && isToday) {
+          const error = new Error(
+            `Món ${temp.name} chỉ còn lại ${temp.amountAvailable} xuất `
+          );
+          error.statusCode = 422;
+          throw error;
+        }
+      }
+      if (food.kind == "FastFoodAndDrink") {
+        const temp = await FastFoodAndDrink.findById(food._id);
         let amountAvailable = temp.batch.reduce(
           (amountAvailable, el) => amountAvailable + el.quantity,
           0
@@ -62,6 +124,35 @@ const placeOrder = async (req, res, next) => {
           error.statusCode = 422;
           throw error;
         }
+      }
+    }
+
+    for (extraFood of amountOfExtraFood) {
+      temp = await ExtraFood.findById(extraFood._id);
+      if (temp.amountAvailable == 0 && isToday) {
+        const error = new Error(`Món ${temp.name} đã hết hàng ! `);
+        error.statusCode = 422;
+        throw error;
+      }
+      if (!temp.isAvailable) {
+        const error = new Error(`Món ${temp.name} đã bị khóa ! `);
+        error.statusCode = 422;
+        throw error;
+      }
+      if (temp.amountAvailable < extraFood.quantity && isToday) {
+        const error = new Error(
+          `Món ${temp.name} chỉ còn lại ${temp.amountAvailable} xuất `
+        );
+        error.statusCode = 422;
+        throw error;
+      }
+    }
+    //
+
+    for ([index, food] of order.entries()) {
+      if (food.kind === "FastFoodAndDrink") {
+        const batchInfo = [];
+        const temp = await FastFoodAndDrink.findById(food.object._id);
 
         let remain = food.quantity;
 
@@ -97,17 +188,17 @@ const placeOrder = async (req, res, next) => {
       }
       if (food.kind === "Dish") {
         let temp = await Dish.findById(food.object._id);
-        if (!temp.isAvailable) {
-          const error = new Error(`Món ${temp.name} đã hết hàng ! `);
-          error.statusCode = 422;
-          throw error;
+
+        if (isToday) {
+          temp.amountAvailable = temp.amountAvailable - food.quantity;
+          await temp.save();
         }
         for (extraFood of food.extraFood) {
           temp = await ExtraFood.findById(extraFood.object._id);
-          if (!temp.isAvailable) {
-            const error = new Error(`Món ${temp.name} đã hết hàng ! `);
-            error.statusCode = 422;
-            throw error;
+
+          if (isToday) {
+            temp.amountAvailable = temp.amountAvailable - extraFood.quantity;
+            await temp.save();
           }
         }
       }

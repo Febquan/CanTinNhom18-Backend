@@ -21,6 +21,9 @@ const placeOrderRoute = require("./routes/user/placeOrderRoute");
 const restorePasswordRoute = require("./routes/user/auth/restorePasswordRoute");
 const changePasswordRoute = require("./routes/user/auth/changePasswordRoute");
 const displayRoute = require("./routes/user/displayRoute");
+// schedule
+const DailyFoodAmount = require("./utils/updateDaily");
+DailyFoodAmount();
 // Image upload
 const path = require("path");
 const multer = require("multer");

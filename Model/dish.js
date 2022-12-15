@@ -15,6 +15,14 @@ const dishesSchema = new Schema({
     type: Number,
     require: true,
   },
+  amountAvailable: {
+    type: Number,
+    default: 0,
+  },
+  everyDayAmount: {
+    type: Number,
+    default: 0,
+  },
   info: {
     type: String,
     require: true,
