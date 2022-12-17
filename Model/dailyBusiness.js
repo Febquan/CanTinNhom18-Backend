@@ -2,13 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const dailyBusinessSchema = new Schema({
-  expenses: [
-    {
-      name: String,
-      cost: Number,
-      default: 0,
-    },
-  ],
   totalExpenses: {
     type: Number,
     default: 0,
@@ -26,7 +19,7 @@ const dailyBusinessSchema = new Schema({
     default: 0,
   },
   status: {
-    type: String, //complete, uncompleted
+    type: String, //complete, uncompleted,waitingConfirm,invalidExpenses
     require: true,
   },
   selling: [
@@ -40,6 +33,20 @@ const dailyBusinessSchema = new Schema({
         type: Number,
         default: 0,
       },
+    },
+  ],
+  expenses: [
+    {
+      name: String,
+      amount: {
+        type: Number,
+        default: 0,
+      },
+      cost: {
+        type: Number,
+        default: 0,
+      },
+      kind: String,
     },
   ],
   loss: [

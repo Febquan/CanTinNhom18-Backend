@@ -35,6 +35,14 @@ const completeOrdersSchema = new Schema({
         },
       ],
       quantity: { type: Number, default: 1 },
+      batchInfo: [
+        {
+          expiredDated: { type: Date },
+          buyDate: { type: Date },
+          quantity: { type: Number, default: 1 },
+          _id: false,
+        },
+      ],
       _id: false,
     },
   ],

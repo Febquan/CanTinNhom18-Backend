@@ -14,6 +14,12 @@ exports.signup = async (req, res, next) => {
       throw error;
     }
     const email = req.body.email;
+    const userFind = await User.findOne({ email: email });
+    // if (userFind) {
+    //   const error = new Error("Email đã được đăng ký");
+    //   error.statusCode = 400;
+    //   throw error;
+    // }
     const name = req.body.name;
     const password = req.body.password;
     const hashedPw = await bcrypt.hash(password, 12);

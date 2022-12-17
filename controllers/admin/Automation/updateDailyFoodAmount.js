@@ -3,6 +3,7 @@ const schedule = require("node-schedule");
 const DishModel = require("./../../../Model/dish");
 const ExtraFoodModel = require("./../../../Model/extraFood");
 const ordersModel = require("./../../../Model/orders");
+const DailyBusinessModel = require("../../../Model/dailyBusiness");
 
 function counter(accumulator, cur) {
   const index = accumulator.findIndex((el) => {
@@ -34,6 +35,35 @@ function setScheduleUpdatingDailyFoodAmount() {
         },
       });
 
+      //add expense to daily business
+      const dailyBusiness = await DailyBusinessModel.findOne({
+        date: {
+          $gte: dayjs().startOf("day"),
+          $lte: dayjs().endOf("day"),
+        },
+      });
+      for (dish of dishes) {
+        if (dish.everyDayAmount > 0) {
+          dailyBusiness.expenses.push({
+            name: dish.name,
+            amount: dish.everyDayAmount,
+            cost: 0,
+            kind: "Dish",
+          });
+        }
+      }
+      for (extraFood of extraFoods) {
+        if (extraFood.everyDayAmount > 0) {
+          dailyBusiness.expenses.push({
+            name: extraFood.name,
+            amount: extraFood.everyDayAmount,
+            cost: 0,
+            kind: "ExtraFood",
+          });
+        }
+      }
+      await dailyBusiness.save();
+      //preOrder
       const preOrderDish = todayOrders
         .map((el) => el.order)
         .flat()
