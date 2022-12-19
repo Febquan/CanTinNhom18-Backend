@@ -5,11 +5,15 @@ const findDailyBusiness = async (req, res, next) => {
   try {
     const status = req.body.status;
     const atTime = req.body.atTime;
+    const notStatus = req.body.notStatus;
     const inDuration = req.body.inDuration; // day  month  year
 
     const findOption = {};
     if (status) {
       findOption.status = status;
+    }
+    if (notStatus) {
+      findOption.status = { $ne: notStatus };
     }
     if (atTime && inDuration) {
       findOption.date = {

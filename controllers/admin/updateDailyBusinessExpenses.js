@@ -8,11 +8,24 @@ const updateDailyBusinessExpenses = async (req, res, next) => {
     const dailyBusiness = await DailyBusinessModel.findOne({
       _id: dailyBusinessId,
     });
-    dailyBusiness.status = "uncompleted";
-    dailyBusiness.loss = [];
+    dailyBusiness.status =
+      dailyBusiness.status == "waitingConfirm"
+        ? "waitingConfirm"
+        : "uncompleted";
+    dailyBusiness.loss = expenses.filter((el) => el.kind != "FastFoodAndDrink");
     dailyBusiness.totalLoss = 0;
-    dailyBusiness.expenses = expenses;
+    dailyBusiness.expenses = expenses.filter(
+      (el) => el.kind != "FastFoodAndDrink"
+    );
     dailyBusiness.totalExpenses = totalExpense;
+    dailyBusiness.totalLoss = expenses
+      .filter((el) => el.kind != "FastFoodAndDrink")
+      .reduce((sum, cur) => sum + cur.cost, 0);
+    console.log(
+      dailyBusiness.totalLoss,
+      expenses.filter((el) => el.kind == "Dish")
+    );
+    dailyBusiness.status = "uncompleted";
     await dailyBusiness.save();
     res.status(200).json({
       ok: true,

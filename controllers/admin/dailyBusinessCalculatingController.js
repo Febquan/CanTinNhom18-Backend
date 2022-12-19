@@ -2,7 +2,7 @@ const EndOfDayCalculating = require("./Automation/EndOfDayCalculatingDaily");
 
 const businessCalculating = async (req, res, next) => {
   try {
-    await EndOfDayCalculating.endOfDayCalculatingBusiness();
+    await EndOfDayCalculating.endOfDayCalculatingBusiness(req.body.date);
     res.status(200).json({
       ok: true,
     });

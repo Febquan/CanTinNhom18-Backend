@@ -19,7 +19,7 @@ const dailyBusinessSchema = new Schema({
     default: 0,
   },
   status: {
-    type: String, //complete, uncompleted,waitingConfirm,invalidExpenses
+    type: String, //completed, uncompleted,waitingConfirm,invalidExpenses
     require: true,
   },
   selling: [
