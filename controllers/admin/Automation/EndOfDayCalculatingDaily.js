@@ -23,7 +23,10 @@ async function endOfDayCalculatingBusiness(date = undefined) {
         $lte: dayjs(date).endOf("day"),
       },
     });
-    console.log(dayjs(date).format("DD/MM/YYYY"), dayjs.tz.guess());
+    console.log(
+      dayjs(date).tz("Asia/Saigon").format("DD/MM/YYYY"),
+      dayjs.tz.guess()
+    );
     //Checking expenses is all not eaqual too 0
     let zero = false;
     for (item of dailyBusiness.expenses) {
