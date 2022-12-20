@@ -18,6 +18,7 @@ async function endOfDayCalculatingBusiness(date = undefined) {
         $lte: dayjs(date).endOf("day"),
       },
     });
+    console.log(dayjs(date).format("DD/MM/YYYY"));
     //Checking expenses is all not eaqual too 0
     let zero = false;
     for (item of dailyBusiness.expenses) {
@@ -94,83 +95,7 @@ async function endOfDayCalculatingBusiness(date = undefined) {
         0
       );
       // }
-      console.log(
-        dailyBusiness.income,
-        dailyBusiness.totalProfit,
-        dailyBusiness.totalExpenses,
-        0
-      );
 
-      //calculate loss and income for DISH and ExtraFood
-
-      // const allDish = await DishModel.find();
-      // const allExtraFood = await ExtraFoodModel.find();
-      // for (dish of allDish) {
-      //   const index4 = dailyBusiness.expenses.findIndex(
-      //     (el) => el.name == dish.name
-      //   );
-      //   if (index4 == -1) {
-      //     continue;
-      //   }
-      //   const realDishPrice =
-      //     dailyBusiness.expenses[index4].cost /
-      //     dailyBusiness.expenses[index4].amount;
-
-      //   dailyBusiness.totalLoss += dish.amountAvailable * realDishPrice;
-      //   dailyBusiness.income +=
-      //     (dish.everyDayAmount - dish.amountAvailable) * realDishPrice;
-      //   if (dish.amountAvailable > 0) {
-      //     dailyBusiness.loss.push({
-      //       name: dish.name,
-      //       amount: dish.amountAvailable,
-      //       cost: (dish.amountAvailable * realDishPrice).toFixed(2),
-      //     });
-      //   }
-      //   if (dish.amountAvailable < dish.everyDayAmount) {
-      //     dailyBusiness.selling.push({
-      //       name: dish.name,
-      //       amount: dish.everyDayAmount - dish.amountAvailable,
-      //       cost: (
-      //         (dish.everyDayAmount - dish.amountAvailable) *
-      //         dish.price
-      //       ).toFixed(2),
-      //     });
-      //   }
-      // }
-
-      // for (extraFood of allExtraFood) {
-      //   const index4 = dailyBusiness.expenses.findIndex(
-      //     (el) => el.name == extraFood.name
-      //   );
-      //   if (index4 == -1) {
-      //     continue;
-      //   }
-      //   const realExtraFoodPrice =
-      //     dailyBusiness.expenses[index4].cost /
-      //     dailyBusiness.expenses[index4].amount;
-      //   dailyBusiness.totalLoss +=
-      //     extraFood.amountAvailable * realExtraFoodPrice;
-      //   dailyBusiness.income +=
-      //     (extraFood.everyDayAmount - extraFood.amountAvailable) *
-      //     realExtraFoodPrice;
-      //   if (extraFood.amountAvailable > 0) {
-      //     dailyBusiness.loss.push({
-      //       name: extraFood.name,
-      //       amount: extraFood.amountAvailable,
-      //       cost: (extraFood.amountAvailable * realExtraFoodPrice).toFixed(2),
-      //     });
-      //   }
-      //   if (extraFood.amountAvailable < extraFood.everyDayAmount) {
-      //     dailyBusiness.selling.push({
-      //       name: extraFood.name,
-      //       amount: extraFood.everyDayAmount - extraFood.amountAvailable,
-      //       cost: (
-      //         (extraFood.everyDayAmount - extraFood.amountAvailable) *
-      //         extraFood.price
-      //       ).toFixed(2),
-      //     });
-      //   }
-      // }
       //calculate income for FFAD
       //add to dailybusines
 
@@ -345,11 +270,7 @@ async function endOfDayCalculatingBusiness(date = undefined) {
 
     dailyBusiness.totalProfit =
       dailyBusiness.income - dailyBusiness.totalExpenses;
-    console.log(
-      dailyBusiness.income,
-      dailyBusiness.totalProfit,
-      dailyBusiness.totalExpenses
-    );
+
     await dailyBusiness.save();
     console.log("Done clean up orders, and calculate loss");
   } catch (err) {
