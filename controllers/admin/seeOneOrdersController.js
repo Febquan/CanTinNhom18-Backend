@@ -3,7 +3,6 @@ const OrdersModel = require("../../Model/orders");
 const seeOneOrder = async (req, res, next) => {
   try {
     const orderId = req.body.orderId;
-    console.log(orderId);
     const orders = await OrdersModel.findOne({ _id: orderId })
       .populate("user")
       .populate("order.object")

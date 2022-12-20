@@ -203,7 +203,6 @@ exports.sendEmailRestorePassword = async (req, res, next) => {
 
 exports.RestorePassword = async (req, res, next) => {
   try {
-    console.log(req.body.token);
     const decodedToken = jwt.verify(
       req.body.token,
       process.env.TOKEN_PRIVATE_KEY

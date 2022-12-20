@@ -10,6 +10,11 @@ const checkToday = require("../../../utils/isToday");
 const dish = require("../../../Model/dish");
 const extraFood = require("../../../Model/extraFood");
 
+var utc = require("dayjs/plugin/utc");
+var timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Saigon");
 async function endOfDayCalculatingBusiness(date = undefined) {
   try {
     const dailyBusiness = await DailyBusinessModel.findOne({
@@ -18,7 +23,7 @@ async function endOfDayCalculatingBusiness(date = undefined) {
         $lte: dayjs(date).endOf("day"),
       },
     });
-    console.log(dayjs(date).format("DD/MM/YYYY"));
+    console.log(dayjs(date).format("DD/MM/YYYY"), dayjs.tz.guess());
     //Checking expenses is all not eaqual too 0
     let zero = false;
     for (item of dailyBusiness.expenses) {
@@ -107,13 +112,7 @@ async function endOfDayCalculatingBusiness(date = undefined) {
       })
         .populate("order.object")
         .populate("order.extraFood.object");
-      console.log(
-        todayCompleteOrders
-          .map((el) => el.order)
-          .flat()
-          .map((el) => el.extraFood)
-          .flat()
-      );
+
       for (todayCompleteOrder of todayCompleteOrders) {
         for (food of todayCompleteOrder.order) {
           ////////////////////////////////////////

@@ -31,7 +31,6 @@ const findFoodAndUpdate = async (req, res, next) => {
         error.statusCode = 400;
         throw error;
       }
-      // console.log(path.join(__dirname, "..", "..", req.body.oldFilePath));
 
       await DishModel.findByIdAndUpdate(id, {
         name,

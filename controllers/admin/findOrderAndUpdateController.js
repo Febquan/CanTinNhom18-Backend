@@ -153,7 +153,6 @@ const findOrderAndUpdate = async (req, res, next) => {
       }
     }
     //testing adding amount is available
-    console.log(amountOfFoodChange, amountOfExtraFoodChange);
     for (food of amountOfFoodChange) {
       const dish = await DishModel.findOne({ _id: food._id });
       const afterAdding = dish.amountAvailable - food.quantity;
@@ -169,7 +168,6 @@ const findOrderAndUpdate = async (req, res, next) => {
     for (extraFood of amountOfExtraFoodChange) {
       const extraF = await ExtraFoodModel.findOne({ _id: extraFood._id });
       const afterAdding = extraF.amountAvailable - extraFood.quantity;
-      console.log(afterAdding);
       if (afterAdding < 0 || afterAdding > extraF.everyDayAmount) {
         const error = new Error(
           `Sản phẩm ${extraF.name} này chỉ còn lại ${extraF.amountAvailable} so với số lượng cần thêm là ${extraFood.quantity} !`

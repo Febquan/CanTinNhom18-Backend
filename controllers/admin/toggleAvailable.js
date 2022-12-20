@@ -6,9 +6,6 @@ const findDishAndUpdate = async (req, res, next) => {
     const foodId = req.body.foodId;
     const isAvailable = req.body.isAvailable;
     const type = req.body.type;
-    console.log(type);
-    console.log(foodId);
-    console.log(isAvailable);
     let updateAvailable = null;
     if (type == "Dish") {
       updateAvailable = await DishModel.findOneAndUpdate(

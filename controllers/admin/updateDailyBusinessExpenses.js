@@ -21,10 +21,6 @@ const updateDailyBusinessExpenses = async (req, res, next) => {
     dailyBusiness.totalLoss = expenses
       .filter((el) => el.kind != "FastFoodAndDrink")
       .reduce((sum, cur) => sum + cur.cost, 0);
-    console.log(
-      dailyBusiness.totalLoss,
-      expenses.filter((el) => el.kind == "Dish")
-    );
     dailyBusiness.status = "uncompleted";
     await dailyBusiness.save();
     res.status(200).json({
