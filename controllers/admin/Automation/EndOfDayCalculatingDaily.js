@@ -7,26 +7,19 @@ const ExtraFoodModel = require("../../../Model/extraFood");
 const CompleteOrdersModel = require("../../../Model/completeOrders");
 const schedule = require("node-schedule");
 const checkToday = require("../../../utils/isToday");
-const dish = require("../../../Model/dish");
+
 const extraFood = require("../../../Model/extraFood");
 
-var utc = require("dayjs/plugin/utc");
-var timezone = require("dayjs/plugin/timezone"); // dependent on utc plugin
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault("Asia/Saigon");
+const dayjsSG = require("../../../utils/dayjsSaiGonTimeZone");
 async function endOfDayCalculatingBusiness(date = undefined) {
   try {
     const dailyBusiness = await DailyBusinessModel.findOne({
       date: {
-        $gte: dayjs(date).startOf("day"),
-        $lte: dayjs(date).endOf("day"),
+        $gte: dayjsSG(date).startOf("day"),
+        $lte: dayjsSG(date).endOf("day"),
       },
     });
-    console.log(
-      dayjs(date).tz("Asia/Saigon").format("DD/MM/YYYY"),
-      dayjs.tz.guess()
-    );
+
     //Checking expenses is all not eaqual too 0
     let zero = false;
     for (item of dailyBusiness.expenses) {
@@ -38,8 +31,8 @@ async function endOfDayCalculatingBusiness(date = undefined) {
       if (dailyBusiness.status == "uncompleted") {
         const orderUnpaid = await OrdersModel.find({
           arrive_at: {
-            $gte: dayjs(date).startOf("day"),
-            $lte: dayjs(date).endOf("day"),
+            $gte: dayjsSG(date).startOf("day"),
+            $lte: dayjsSG(date).endOf("day"),
           },
         })
           .populate("order.object")
@@ -109,8 +102,8 @@ async function endOfDayCalculatingBusiness(date = undefined) {
 
       const todayCompleteOrders = await CompleteOrdersModel.find({
         pay_at: {
-          $gte: dayjs(date).startOf("day"),
-          $lte: dayjs(date).endOf("day"),
+          $gte: dayjsSG(date).startOf("day"),
+          $lte: dayjsSG(date).endOf("day"),
         },
       })
         .populate("order.object")
@@ -281,8 +274,13 @@ async function endOfDayCalculatingBusiness(date = undefined) {
 }
 
 function endOfDayCalculatingBusinessSchedule() {
-  var cronExpress = "0 0 6 * * *";
-  schedule.scheduleJob(cronExpress, async function () {
+  let rule = new schedule.RecurrenceRule();
+  rule.tz = "Asia/Saigon";
+  rule.second = 0;
+  rule.minute = 0;
+  rule.hour = 6;
+
+  schedule.scheduleJob(rule, async function () {
     endOfDayCalculatingBusiness();
   });
 }

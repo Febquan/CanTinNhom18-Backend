@@ -1,8 +1,8 @@
-const dayjs = require("dayjs");
+const dayjsSG = require("./../utils/dayjsSaiGonTimeZone");
 module.exports = function isToday(dateString) {
   return (
-    dayjs().get("year") === dayjs(dateString).get("year") &&
-    dayjs().get("month") === dayjs(dateString).get("month") &&
-    dayjs().get("date") === dayjs(dateString).get("date")
+    dayjsSG().get("year") === dayjsSG(dateString).get("year") &&
+    dayjsSG().get("month") === dayjsSG(dateString).get("month") &&
+    dayjsSG().get("date") === dayjsSG(dateString).get("date")
   );
 };

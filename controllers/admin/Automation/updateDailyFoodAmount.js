@@ -5,6 +5,8 @@ const ExtraFoodModel = require("./../../../Model/extraFood");
 const ordersModel = require("./../../../Model/orders");
 const DailyBusinessModel = require("../../../Model/dailyBusiness");
 
+const dayjsSG = require("../../../utils/dayjsSaiGonTimeZone");
+
 function counter(accumulator, cur) {
   const index = accumulator.findIndex((el) => {
     return el._id.toString() == cur.object._id.toString();
@@ -20,9 +22,13 @@ function counter(accumulator, cur) {
 }
 
 function setScheduleUpdatingDailyFoodAmount() {
-  var cronExpress = "0 0 0 * * *";
+  let rule = new schedule.RecurrenceRule();
+  rule.tz = "Asia/Saigon";
+  rule.second = 0;
+  rule.minute = 0;
+  rule.hour = 0;
 
-  schedule.scheduleJob(cronExpress, async function () {
+  schedule.scheduleJob(rule, async function () {
     try {
       const dishes = await DishModel.find();
 
@@ -30,16 +36,16 @@ function setScheduleUpdatingDailyFoodAmount() {
 
       todayOrders = await ordersModel.find({
         arrive_at: {
-          $gte: dayjs().startOf("day"),
-          $lte: dayjs().endOf("day"),
+          $gte: dayjsSG().startOf("day"),
+          $lte: dayjsSG().endOf("day"),
         },
       });
 
       //add expense to daily business
       const dailyBusiness = await DailyBusinessModel.findOne({
         date: {
-          $gte: dayjs().startOf("day"),
-          $lte: dayjs().endOf("day"),
+          $gte: dayjsSG().startOf("day"),
+          $lte: dayjsSG().endOf("day"),
         },
       });
       for (dish of dishes) {

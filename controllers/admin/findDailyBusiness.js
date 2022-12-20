@@ -1,6 +1,5 @@
-const dayjs = require("dayjs");
 const DailyBusinessModel = require("../../Model/dailyBusiness");
-
+const dayjsSG = require("../../utils/dayjsSaiGonTimeZone");
 const findDailyBusiness = async (req, res, next) => {
   try {
     const status = req.body.status;
@@ -17,8 +16,8 @@ const findDailyBusiness = async (req, res, next) => {
     }
     if (atTime && inDuration) {
       findOption.date = {
-        $gte: dayjs(atTime).startOf(inDuration),
-        $lte: dayjs(atTime).endOf(inDuration),
+        $gte: dayjsSG(atTime).startOf(inDuration),
+        $lte: dayjsSG(atTime).endOf(inDuration),
       };
     }
     const dbRes = await DailyBusinessModel.find(findOption);
