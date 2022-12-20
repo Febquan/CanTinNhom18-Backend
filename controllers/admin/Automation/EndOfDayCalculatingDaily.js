@@ -277,7 +277,7 @@ function endOfDayCalculatingBusinessSchedule() {
   let rule = new schedule.RecurrenceRule();
   rule.tz = "Asia/Saigon";
   rule.second = 0;
-  rule.minute = 0;
+  rule.minute = 10;
   rule.hour = 18;
 
   schedule.scheduleJob(rule, async function () {
