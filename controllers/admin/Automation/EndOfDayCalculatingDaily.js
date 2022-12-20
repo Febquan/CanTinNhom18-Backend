@@ -278,7 +278,7 @@ function endOfDayCalculatingBusinessSchedule() {
   rule.tz = "Asia/Saigon";
   rule.second = 0;
   rule.minute = 0;
-  rule.hour = 6;
+  rule.hour = 18;
 
   schedule.scheduleJob(rule, async function () {
     endOfDayCalculatingBusiness();
