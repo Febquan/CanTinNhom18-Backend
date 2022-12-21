@@ -8,8 +8,6 @@ const CompleteOrdersModel = require("../../../Model/completeOrders");
 const schedule = require("node-schedule");
 const checkToday = require("../../../utils/isToday");
 
-const extraFood = require("../../../Model/extraFood");
-
 const dayjsSG = require("../../../utils/dayjsSaiGonTimeZone");
 async function endOfDayCalculatingBusiness(date = undefined) {
   try {
@@ -277,7 +275,7 @@ function endOfDayCalculatingBusinessSchedule() {
   let rule = new schedule.RecurrenceRule();
   rule.tz = "Asia/Saigon";
   rule.second = 0;
-  rule.minute = 10;
+  rule.minute = 0;
   rule.hour = 18;
 
   schedule.scheduleJob(rule, async function () {
