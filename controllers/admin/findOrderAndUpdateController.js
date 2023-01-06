@@ -14,11 +14,10 @@ const findOrderAndUpdate = async (req, res, next) => {
     for ([index, item] of orderUpdated.order.entries()) {
       if (item.kind === "FastFoodAndDrink") {
         const quantityChange = order.order[index].quantity - item.quantity;
+
         const oldFFAD = await FFADModel.findById({ _id: item.object._id });
 
         if (quantityChange > 0) {
-          orderUpdated.order[index].quantity += quantityChange;
-
           let amountAvailable = oldFFAD.batch.reduce(
             (amountAvailable, el) => amountAvailable + el.quantity,
             0
@@ -46,7 +45,10 @@ const findOrderAndUpdate = async (req, res, next) => {
           let remain = quantityChange;
           const batchInfo = [];
           for ([index2, batch] of oldFFAD.batch.entries()) {
-            if (dayjs().diff(dayjs(batch.expiredDated)) < 0) {
+            if (
+              dayjs().diff(dayjs(batch.expiredDated)) < 0 &&
+              batch.quantity > 0
+            ) {
               remain = batch.quantity - remain;
 
               if (remain >= 0) {
@@ -57,6 +59,7 @@ const findOrderAndUpdate = async (req, res, next) => {
                   expiredDated: oldFFAD.batch[index2].expiredDated,
                   buyDate: oldFFAD.batch[index2].buyDate,
                 });
+
                 break;
               }
               if (remain < 0) {
@@ -103,7 +106,6 @@ const findOrderAndUpdate = async (req, res, next) => {
             }
           }
         }
-
         await oldFFAD.save();
       }
     }
@@ -191,7 +193,9 @@ const findOrderAndUpdate = async (req, res, next) => {
     }
     //change order
     for ([index, item] of orderUpdated.order.entries()) {
-      orderUpdated.order[index] = order.order[index];
+      if (item.kind !== "FastFoodAndDrink") {
+        orderUpdated.order[index] = order.order[index];
+      }
     }
 
     orderUpdated.cost = order.cost;
